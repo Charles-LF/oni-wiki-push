@@ -1,4 +1,4 @@
-import { Context, Schema, Session, Logger, Bot } from "koishi";
+import { Context, Schema, Logger, Bot } from "koishi";
 import { listen } from "./listen";
 
 export const name = "oni-wiki-push";
@@ -36,34 +36,29 @@ export function apply(ctx: Context, config: Config) {
     }
   );
   // 监听
-  ctx.database.upsert("rss_wiki", [
-    {
-      id: 1,
-      title: "test",
-    },
-  ]);
-  listen(ctx, config.rss, config.sleep);
+  // ctx.database.upsert("rss_wiki", [
+  //   {
+  //     id: 1,
+  //     title: "test",
+  //   },
+  // ]);
+
   const logger = ctx.logger("test");
 
-  //获取左后一条订阅
+  //获取最后一条订阅,并开始订阅
   ctx.command("t").action(async ({ session }) => {
+    listen(ctx, config.rss, session, config.sleep);
+
     const data = await ctx.database.get("rss_wiki", { id: 1 });
-    const [title, user, comment, date, url, revid, parentid] = data;
-    const message = `
-      <缺氧WIKI> 最近更改[ZH] ${title}
-       编辑人员: ${user}
-       更改概要: ${comment}
-       修改时间: ${data}
-       原文链接: ${url}?diff=${revid}&oldid=${parentid}
+    logger.info(data);
+    const { title, user, comment, date, url, revid, parentid } = { ...data[0] };
+    const message = `《缺氧WIKI》最近更改[ZH] ${title}\n编辑人员: ${user}\n更改概要: ${comment}\n修改时间: ${date}\n原文链接: ${url}?diff=${revid}&oldid=${parentid}
     `;
     return message;
   });
   ctx.command("s").action(({ session }) => {
     logger.info("s");
-    // ctx.http.post("", {});
 
-    // ctx.broadcast(["1739915"], "t", true);
-
-    return "hhhh";
+    return session.channelId;
   });
 }

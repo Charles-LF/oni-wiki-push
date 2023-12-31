@@ -1,5 +1,6 @@
-import type { Channel, Context, Dict } from "koishi";
+import type { Context } from "koishi";
 import { logger } from ".";
+import { Session } from "inspector";
 
 // 扩展数据库类型
 declare module "koishi" {
@@ -18,7 +19,12 @@ export interface Revisions {
   parentid: number;
 }
 
-export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
+export async function listen(
+  ctx: Context,
+  rss: string,
+  session,
+  sleep: number = 30000
+) {
   // 从fandom获取动态数据,30秒查询一次
   setInterval(async () => {
     // 发请求获取Wiki的最新动态
@@ -36,15 +42,16 @@ export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
         const { pageid, revisions, title } = res.query?.allrevisions[0];
         const { revid, parentid, user, timestamp, comment } = revisions[0];
         const date = new Date(timestamp).toLocaleString();
-        return [title, user, comment, date, db_url, revid, parentid];
 
-        // logger.info(`
-        //   <缺氧WIKI> 最近更改[ZH] ${title}
-        //   编辑人员: ${user}
-        //   更改概要: ${comment}
-        //   修改时间: ${date}
-        //   原文链接: ${db_url}${encodeURI(title)}?diff=${revid}&oldid=${parentid}
-        // `);
+        logger.info(`
+          <缺氧WIKI> 最近更改[ZH] ${title}
+          编辑人员: ${user}
+          更改概要: ${comment}
+          修改时间: ${date}
+          原文链接: ${db_url}${encodeURI(title)}?diff=${revid}&oldid=${parentid}
+
+        `);
+        return [title, user, comment, date, db_url, revid, parentid];
       })
       .catch(async (err) => {
         logger.error(err);
@@ -78,7 +85,8 @@ export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
       修改时间: ${date}
       原文链接: ${url}?diff=${revid}&oldid=${parentid}`;
 
-      // ctx.broadcast(["1739915"], message, true);
+      // ctx.broadcast(["1739915"], message, false);
+      // session.bot.broadcast(["1739915"], message, 1000);
     }
   }, 10000);
 }
