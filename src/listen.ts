@@ -1,5 +1,4 @@
 import type { Context } from "koishi";
-import { logger } from ".";
 
 // 扩展数据库类型
 declare module "koishi" {
@@ -37,18 +36,10 @@ export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
         const { revid, parentid, user, timestamp, comment } = revisions[0];
         const date = new Date(timestamp).toLocaleString();
 
-        logger.info(`
-          <缺氧WIKI> 最近更改[ZH] ${title}
-          编辑人员: ${user}
-          更改概要: ${comment}
-          修改时间: ${date}
-          原文链接: ${db_url}${encodeURI(title)}?diff=${revid}&oldid=${parentid}
-
-        `);
         return [title, user, comment, date, db_url, revid, parentid];
       })
       .catch(async (err) => {
-        logger.error(err);
+        console.log(err);
         return [];
       });
     //查询数据库
@@ -58,7 +49,7 @@ export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
     if (edit[3] != db_edit[0].date) {
       await ctx.database.upsert("rss_wiki", [
         {
-          id: 1,
+          id: 2,
           title: title,
           user: user,
           comment: comment,
@@ -68,9 +59,12 @@ export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
           parentid: Number(parentid),
         },
       ]);
+    } else {
+      return;
       return;
     } else {
       return;
     }
+  }, sleep);
   }, sleep);
 }
