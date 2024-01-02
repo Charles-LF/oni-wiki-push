@@ -1,6 +1,5 @@
 import type { Context } from "koishi";
 import { logger } from ".";
-import { Session } from "inspector";
 
 // 扩展数据库类型
 declare module "koishi" {
@@ -19,12 +18,7 @@ export interface Revisions {
   parentid: number;
 }
 
-export async function listen(
-  ctx: Context,
-  rss: string,
-  session,
-  sleep: number = 30000
-) {
+export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
   // 从fandom获取动态数据,30秒查询一次
   setInterval(async () => {
     // 发请求获取Wiki的最新动态
@@ -61,9 +55,6 @@ export async function listen(
     const db_edit = await ctx.database.get("rss_wiki", { id: 1 });
     const [title, user, comment, date, url, revid, parentid] = edit;
 
-    logger.info(edit);
-    logger.info(db_edit);
-
     if (edit[3] != db_edit[0].date) {
       await ctx.database.upsert("rss_wiki", [
         {
@@ -77,16 +68,9 @@ export async function listen(
           parentid: Number(parentid),
         },
       ]);
-
-      const message = `
-      <缺氧WIKI> 最近更改[ZH] ${title}
-      编辑人员: ${url}
-      更改概要: ${comment}
-      修改时间: ${date}
-      原文链接: ${url}?diff=${revid}&oldid=${parentid}`;
-
-      // ctx.broadcast(["1739915"], message, false);
-      // session.bot.broadcast(["1739915"], message, 1000);
+      return;
+    } else {
+      return;
     }
-  }, 10000);
+  }, sleep);
 }
