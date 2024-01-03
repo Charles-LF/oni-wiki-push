@@ -61,10 +61,6 @@ export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
       ]);
     } else {
       return;
-      return;
-    } else {
-      return;
     }
-  }, sleep);
   }, sleep);
 }

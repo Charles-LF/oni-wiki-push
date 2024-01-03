@@ -8,9 +8,7 @@ export interface Config {
   rss: string;
   url: string;
   sleep: number;
-  botId: string;
   botToken: string;
-  channelId: string;
   botId: string;
   channelId: string;
 }
@@ -21,9 +19,7 @@ export const Config: Schema<Config> = Schema.object({
   sleep: Schema.number().description("休眠时间").default(30000),
   botId: Schema.string(),
   channelId: Schema.string(),
-  botId: Schema.string(),
   botToken: Schema.string(),
-  channelId: Schema.string(),
 });
 
 export function apply(ctx: Context, config: Config) {
