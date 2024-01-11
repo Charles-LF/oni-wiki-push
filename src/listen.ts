@@ -38,9 +38,9 @@ export async function listen(
 
         const { pageid, revisions, title } = res.query?.allrevisions[0];
         const { revid, parentid, user, timestamp, comment } = revisions[0];
-        const date = new Date(timestamp).toLocaleString();
+        const resdate = new Date(timestamp).toLocaleString();
 
-        return [title, user, comment, date, db_url, revid, parentid];
+        return [title, user, comment, resdate, db_url, revid, parentid];
       })
       .catch(async (err) => {
         console.log(err);
@@ -49,7 +49,7 @@ export async function listen(
 
     //查询数据库
     const db_edit = await ctx.database.get("rss_wiki", { id: 1 });
-    const [title, user, comment, date, url, revid, parentid] = edit;
+    const [title, user, comment, resdate, url, revid, parentid] = edit;
 
     if (edit[3] != db_edit[0].date) {
       await ctx.database.upsert("rss_wiki", [
@@ -58,7 +58,7 @@ export async function listen(
           title: title,
           user: user,
           comment: comment,
-          date: date,
+          date: resdate,
           url: url,
           revid: Number(revid),
           parentid: Number(parentid),
