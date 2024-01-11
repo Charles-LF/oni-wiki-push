@@ -17,7 +17,11 @@ export interface Revisions {
   parentid: number;
 }
 
-export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
+export async function listen(
+  ctx: Context,
+  rss: string,
+  sleep: number = 300000
+) {
   // 从fandom获取动态数据,30秒查询一次
   setInterval(async () => {
     // 发请求获取Wiki的最新动态
@@ -42,6 +46,7 @@ export async function listen(ctx: Context, rss: string, sleep: number = 30000) {
         console.log(err);
         return [];
       });
+
     //查询数据库
     const db_edit = await ctx.database.get("rss_wiki", { id: 1 });
     const [title, user, comment, date, url, revid, parentid] = edit;
