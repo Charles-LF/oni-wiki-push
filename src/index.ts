@@ -77,7 +77,7 @@ export function apply(ctx: Context, config: Config) {
             parentid: Number(parentid),
           },
         ]);
-        await screenShot(url, title);
+        await screenShot(title);
         await sendMessage(
           config.channelId,
           config.botId,
@@ -132,9 +132,9 @@ export function apply(ctx: Context, config: Config) {
         logger.info(res);
       });
   }
-  async function screenShot(url: string, title: string) {
+  async function screenShot(title: string) {
     const page = await ctx.puppeteer.page();
-    await page.goto(url, {
+    await page.goto("https://oxygennotincluded.fandom.com/zh/wiki/" + title, {
       // waitUntil: "networkidle2",
       timeout: 0,
     });
@@ -153,7 +153,7 @@ export function apply(ctx: Context, config: Config) {
           .replace(/'/g, "-")}.jpeg`,
       })
       .then(async () => {
-        logger.info(`截图成功: ${url}`);
+        logger.info(`截图成功: ${title}`);
       })
       .catch(async (err) => {
         logger.error(err);
